@@ -7,7 +7,7 @@ int main()
     int arr[100],n,i;
     printf("Enter number of elements in Array: ");
     scanf("%d",&n);
-    printf("Enter Array: ");
+    printf("Enter Array elements: ");
     for(i=0; i<n; i++)
     {
         scanf("%d",&arr[i]);
