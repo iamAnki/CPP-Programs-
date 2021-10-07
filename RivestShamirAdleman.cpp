@@ -1,12 +1,3 @@
-/*
-
-Maitreya Kanitkar
-BE-IT   8084
-
-ICS Assignment 2 : RSA Algorithm
-
-*/
-
 #include<iostream>
 using namespace std;
 
