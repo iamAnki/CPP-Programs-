@@ -1,0 +1,45 @@
+/**
+ * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+ 
+ void func(TreeNode* A,long long s,long long & sum){
+     
+     if(A==NULL) return;
+    // cout<<A->val<<" ";
+     s=s*10;s+=A->val;
+     s=s%1003;
+     if(A->left==NULL&&A->right==NULL){
+         sum+=s;
+     }
+     
+     if(A->left){
+         func(A->left,s,sum);
+     }
+     if(A->right){
+         func(A->right,s,sum);
+     }
+     
+     return;
+ }
+ 
+ 
+ 
+ 
+ 
+ 
+int Solution::sumNumbers(TreeNode* A) {
+    
+    long long  sum=0;
+    long long  s=0;
+    func(A,s,sum);
+    return (int)sum%1003;
+    
+    
+    
+}
