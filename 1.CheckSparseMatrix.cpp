@@ -11,37 +11,28 @@ int main()
 
     cout<<endl;
 
-    int a[100][100];
+    int a[r][c];
     int zeroes = 0 ;
-    int nonzero = 0 ;
 
-    for(int i=0 ; i<r ; i++){
-
-        for(int j=0 ; j<c ; j++){
-
-            cout<<"Enter Element A["<<i<<"]["<<j<<"] : ";
-            cin>>a[i][j];
-        }
-    }
-
-    for(int i=0 ; i<r ; i++){
-
-        for(int j=0 ; j<c ; j++){
-
-            if(a[i][j] == 0)
-                zeroes++;
-            else
-                nonzero++;
-        }
-    }
-
-    if(zeroes > nonzero)
+    for (int i = 0; i < r; i++)
     {
-        cout<<endl<<"The Given Matrix is a SPARSE MATRIX"<<endl;
+        for (int j = 0; j < r; j++)
+        {
+            cin >> a[i][j];
+            if (a[i][j] == 0)
+            {
+                zeroes++;
+            }
+        }
+    }
+
+    if (zeroes > (r * c) / 2)
+    {
+        cout << "The matrix is a sparse matrix";
     }
     else
     {
-        cout<<endl<<"The Given Matrix is NOT a SPARSE MATRIX"<<endl;
+        cout << "The matrix is not a sparse matrix";
     }
 
     return 0;

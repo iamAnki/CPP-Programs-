@@ -1,0 +1,44 @@
+// Question link-> https://codeforces.com/problemset/problem/118/A
+
+#include <bits/stdc++.h>
+using namespace std;
+char upper(char a)
+{
+    if (a >= 65 && a <= 90)
+    {
+        a = a + 32;
+    }
+    return a;
+}
+int main()
+
+{
+    char string[100];
+    vector<char> CharArr;
+    cin >> string;
+    for (int i = 0; i < strlen(string); i++)
+    {
+        string[i] = upper(string[i]);
+    }
+    for (int i = 0; i < strlen(string); i++)
+    {
+        if (string[i] != 'a' && string[i] != 'e' && string[i] != 'i' && string[i] != 'o' && string[i] != 'u' && string[i] != 'y')
+        {
+            CharArr.push_back(string[i]);
+        }
+    }
+
+    cout << ".";
+
+    for (vector<char>::iterator itr = CharArr.begin(); itr != CharArr.end() - 1; itr++)
+
+    {
+        cout << *itr << ".";
+    }
+
+    vector<char>::iterator it = CharArr.end() - 1;
+
+    cout << *it << endl;
+
+    return 0;
+}
