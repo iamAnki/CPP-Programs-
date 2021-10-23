@@ -1,0 +1,46 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void swap(vector<int> &array, int i, int j)
+{
+    int temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+}
+
+void Dutch_Flag_Sort(vector<int> &array)
+{
+    int low = 0, high = array.size() - 1;
+    for (int i = 0; i <= high;)
+    {
+        if (array[i] == 0)
+        {
+            swap(array, i, low);
+            i = i + 1;
+            low = low + 1;
+        }
+        else if (array[i] == 1)
+        {
+            i = i + 1;
+        }
+        else
+        {
+            swap(array, i, high);
+            high = high - 1;
+        }
+    }
+}
+
+int main()
+{
+
+    vector<int> array = {2, 1, 0, 2, 1, 0, 2, 1, 0, 0, 2, 1};
+    Dutch_Flag_Sort(array);
+    for (auto num : array)
+        cout << num << " ";
+
+    cout << endl;
+
+    return 0;
+}
