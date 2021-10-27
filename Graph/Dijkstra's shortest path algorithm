@@ -1,0 +1,93 @@
+#pragma GCC optimize("Ofast")
+#pragma GCC target("avx,avx2,fma")
+#pragma GCC optimization ("unroll-loops")
+#include <iostream>
+#include <bits/stdc++.h> 
+using namespace std;
+#define ll long long 
+#define all(x) (x).begin(),(x).end()
+#define vll vector<ll>
+#define vi vector<ll>
+#define vp vector<pi>
+#define vs vector<string>
+#define pb push_back
+#define mp make_pair
+#define POB pop_back 
+#define f(i,x,z) for(ll i=x;i<z;i++)
+#define debug(x) cout<<'DEBUG------> '<<x<<endl
+#define srt(v) sort(v.begin(), v.end())
+#define clr(x) memset(x, 0, sizeof(x)) 
+#define setall(x,a) memset(x, a, sizeof(x))
+#define INF 1000000000000000003 
+#define mathpi 3.141592653589793238 
+#define F first;
+#define S second;
+#define vpair vector<pair<ll,ll>>
+#define vpairs vector<pair<string,string>>
+#define tin tuple<ll,ll,ll>
+#define rev(i,x,z) for(ll i=x;i>=z;i--)    
+#define nl "\n"
+int head;
+queue<ll>q;
+ll ptr=0;
+void shortest_path(int source,int target,vector<vpair> &adj,vector<ll> &distance)
+{
+    // cout<<source<<" "<<target<<nl;
+    priority_queue<pair<ll,ll>>pq;
+    distance[source]=0;
+    vector<bool>visited(10000,0);
+    visited[source]=1;
+    for(auto x:adj[source])
+    {
+        // cout<<x.first<<" "<<abs(x.second)<<nl;
+        pq.push(mp((-1)*x.second,x.first));
+        distance[x.first]=x.second;
+        visited[x.first]=1;
+    }
+    // cout<<"\n";
+    while(pq.size()!=0)
+    {
+        ll cur=pq.top().second;
+        ll dis=abs(pq.top().first);
+        visited[cur]=1;
+        pq.pop();
+        for(auto x:adj[cur])
+        {
+            // cout<<x.first<<" "<<cur<<" "<<x.second<<" "<<distance[x.first]<<nl;
+            if(distance[cur]+x.second<distance[x.first])
+            {
+                distance[x.first]=distance[cur]+x.second;
+		pq.push(mp(-1*(x.second),x.first));
+            }
+        }
+    }
+}   
+int main()
+{
+	// freopen("inp.txt","r",stdin);
+	// freopen("out.txt","w",stdout);
+	ios::sync_with_stdio(0);// Input and output clearance
+	cin.tie(0);
+    vector<vpair>adj;
+    ll n;
+    cin>>n;
+    adj.resize(100000);
+    f(i,0,n)
+    {
+        ll x,y,z;
+        cin>>x>>y>>z;
+        adj[x].pb(mp(y,z));
+        adj[y].pb(mp(x,z));
+    }
+    //  find distance from a to b;
+    ll t;
+    cin>>t;
+    while(t--)
+    {
+        ll a,b;
+        cin>>a>>b;
+        vector<ll> distance(1000001,INF);
+        shortest_path(a,b,adj,distance);
+        cout<<distance[b]<<"\n";
+    }
+}

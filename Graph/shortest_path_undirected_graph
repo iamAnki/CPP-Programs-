@@ -1,0 +1,86 @@
+#pragma GCC optimize("Ofast")
+#pragma GCC target("avx,avx2,fma")
+#pragma GCC optimization ("unroll-loops")
+#include <iostream>
+#include <bits/stdc++.h> 
+using namespace std;
+#define ll long long 
+#define all(x) (x).begin(),(x).end()
+#define vll vector<ll>
+#define vi vector<ll>
+#define vp vector<pi>
+#define vs vector<string>
+#define pb push_back
+#define mp make_pair
+#define POB pop_back 
+#define f(i,x,z) for(ll i=x;i<z;i++)
+#define debug(x) cout<<'DEBUG------> '<<x<<endl
+#define srt(v) sort(v.begin(), v.end())
+#define clr(x) memset(x, 0, sizeof(x)) 
+#define setall(x,a) memset(x, a, sizeof(x))
+#define INF 1000000000000000003 
+#define mathpi 3.141592653589793238 
+#define F first;
+#define S second;
+#define vpair vector<pair<ll,ll>>
+#define vpairs vector<pair<string,string>>
+#define tin tuple<ll,ll,ll>
+#define rev(i,x,z) for(ll i=x;i>=z;i--)    
+vector<vi>adj;
+int head;
+vector<int>v1(100000,100000);
+queue<ll>q;
+vector<int>visited(100000,0);
+void bfs(int node)
+{
+    q.push(node);
+    v1[node]=0;
+    while(q.size()!=0)
+    {
+        int cur=q.front();
+        visited[cur]=1;
+        q.pop();
+        if(v1[cur]==100000)
+        {
+            v1[cur]=0;
+        }
+        // cout<<v1[cur]<<" ";
+        for(auto x:adj[cur])
+        {
+            if(visited[x]==0)
+            {
+                ll dis=v1[cur]+1;
+                if(dis<v1[x])
+                {
+                    v1[x]=dis;
+                }
+                q.push(x);
+                visited[x]=1;
+            }
+        }
+    }
+}
+int main()
+{
+	// freopen("inp.txt","r",stdin);
+	// freopen("out.txt","w",stdout);
+	ios::sync_with_stdio(0);// Input and output clearance
+	cin.tie(0);
+    ll n,m;
+    cin>>n>>m;
+    adj.resize(100000);
+    f(i,0,m)
+    {
+        ll u,v;
+        cin>>u>>v;
+        adj[u].pb(v);
+        adj[v].pb(u);
+    }
+    // distance of cur node to all nodes
+    bfs(5);
+    f(j,1,n+1)
+    {
+        cout<<v1[j]<<" ";
+    }
+    cout<<"\n";
+}
