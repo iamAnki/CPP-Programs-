@@ -27,8 +27,8 @@ int main() {
         realPart = -b/(2*a);
         imaginaryPart =sqrt(-discriminant)/(2*a);
         cout << "Roots are complex and different."  << endl;
-        cout << "x1 = " << realPart << "+" << imaginaryPart << "i" << endl;
-        cout << "x2 = " << realPart << "-" << imaginaryPart << "i" << endl;
+        cout << "The first root x1 = " << realPart << "+" << imaginaryPart << "i" << endl;
+        cout << "The second root x2 = " << realPart << "-" << imaginaryPart << "i" << endl;
     }
 
     return 0;
