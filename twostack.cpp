@@ -1,4 +1,4 @@
-#include<iostream>
+#include<bits/stdc++.h>
 using namespace std;
  int st1[5],st2[10];
 int r=-1,r1=-1,u=0;
