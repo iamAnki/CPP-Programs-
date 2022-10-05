@@ -30,12 +30,15 @@ int main()
         tempweight += item[i].weight;
         tempval += item[i].value;
     }
+    
     if(tempweight < capacity)
     {
         cout<<tempval<<endl;
         exit(0);
     }
+    
     sort(item, item+n, cmp);
+    
     for(ll i=0;i<n;i++)
     {
         if(capacity == 0)
@@ -53,4 +56,4 @@ int main()
     }
     cout<<fixed<<setprecision(4)<<val<<endl;
     return 0;
-}
+
