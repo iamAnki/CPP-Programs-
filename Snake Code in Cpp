@@ -1,0 +1,223 @@
+#include<iostream.h>  
+#include<conio.h>  
+#include<graphics.h>  
+#include<dos.h>  
+#include<stdlib.h>  
+#include<stdio.h>  
+#include<time.h>  
+#include<string.h>  
+class Snake  
+{  
+ int p1,p2,v1,v2,v3, e1, e2,prev,now,n,colr,dsp,cnt,dly,m;  
+ int stp, egGen;  
+ int xr, yr;  
+ void caught();  
+ public:  
+  long scr;  
+ int strtX,strtY,endX,endY;  
+ int pos[100][2];  
+ void show();  
+ void init();  
+ void egg();  
+ void transpose();  
+ void gnrtCond();  
+ void gnrtUnCond();  
+ void check();  
+ void checkegg();  
+ void move();  
+ void chngDir();  
+ void sndet();  
+ void sndCgt();  
+ int test();  
+ void score();  
+ Snake();  
+ Snake(Snake*);  
+ ~Snake();  
+ };  
+Snake::Snake()  
+ {  
+ }  
+Snake::~Snake()  
+{  
+}  
+void Snake::checkegg()  
+{  
+ if((e1 == p1) && (e2 == p2))  
+ { sndet();  
+  egg();  
+  dly--;  
+  score();  
+  n++;  
+  }  
+}  
+void Snake::sndet()  
+{ nosound();  
+ sound(2500);  
+ delay(2);  
+ nosound();  
+}  
+void Snake::sndCgt()  
+{ nosound();  
+ for(int x=1000;x>0;x--)  
+ { sound(x);  
+  delay(1);  
+  }  
+ nosound();  
+}  
+void Snake::score()  
+{ char *p;  
+  ltoa(scr,p,10);  
+  settextstyle(8,0,1);  
+  setcolor(0);  
+  outtextxy(585,40,p);  
+  if(egGen != 1){  
+  scr = scr + dly / 10;  
+  }  
+  ltoa(scr,p,10);  
+  setcolor(10);  
+  outtextxy(585,40,p);  
+}  
+void Snake::gnrtCond()  
+{ if(n < 367)  
+ { if(now == 8 && (prev != 8 && prev != 2))  
+  { pos[0][0] = p1;  
+   pos[0][1] = p2 - dsp;  
+   prev = now;  
+   }  
+  if(now == 4 && (prev != 4 && prev != 1))  
+  { pos[0][0] = p1 + dsp;  
+   pos[0][1] = p2;  
+   prev = now;  
+   }  
+  if(now == 2 && (prev != 8 && prev != 2))  
+  { pos[0][0] = p1;  
+   pos[0][1] = p2 + dsp;  
+   prev = now;  
+   }  
+  if(now == 1 && (prev != 1 && prev != 4))  
+  {pos[0][0] = p1 - dsp;  
+   pos[0][1] = p2;  
+   prev = now;  
+   }  
+}  
+}  
+void Snake::gnrtUnCond()  
+{  
+  if( prev == 8 )  
+  { pos[0][0] = p1;  
+   pos[0][1] = p2 - dsp;  
+   }  
+ if( prev == 4 )  
+  {pos[0][0] = p1 + dsp;  
+   pos[0][1] = p2;  
+   }  
+ if( prev == 2 )  
+  { pos[0][0] = p1;  
+   pos[0][1] = p2 + dsp;  
+   }  
+ if( prev == 1 )  
+  {pos[0][0] = p1 - dsp;  
+   pos[0][1] = p2;  
+   }  
+ p1 = pos[0][0];  
+ p2 = pos[0][1];  
+}  
+void Snake::check()  
+{  
+ if(p1 > endX)  
+  {p1 = strtX;}  
+ else if(p1 < strtX)  
+  { p1 = endX;}  
+ if(p2 > endY)  
+  { p2 = strtY;}  
+ else if(p2 < strtY)  
+  { p2 = endY;}  
+ pos[0][0] = p1;  
+ pos[0][1] = p2;  
+for(int i = 1;i < n;i++)  
+  { if(p1 == pos[i][0] && p2 == pos[i][1])  
+  { caught();  
+   break;  
+  }  
+ }  
+}  
+void Snake::show()  
+{  
+  int x = getcolor();  
+  if(egGen != 1)  
+  {  
+  setcolor(getbkcolor());  
+  setfillstyle(1,getbkcolor());  
+  fillellipse(v1,v2,yr,yr);  
+   }  
+  else  
+   egGen = 0;  
+  if (egGen == 2)  
+   egGen--;  
+  setcolor(colr);  
+  setfillstyle(1,9);  
+  if(now == 8 || now == 2)  
+   fillellipse(pos[0][0],pos[0][1],xr,yr);  
+  else if(now == 4 || now == 1)  
+   fillellipse(pos[0][0],pos[0][1],yr,xr);  
+  setcolor(x);  
+}  
+void Snake::transpose()  
+{ int i,j,x,y;  
+   p1 = pos[0][0];  
+   p2 = pos[0][1];  
+   if(!egGen){  
+   v1 = pos[n-1][0];  
+   v2 = pos[n-1][1];  
+   }  
+   else  
+    egGen = 0;  
+   for(i = n-1;i >= 1;i--)  
+   {pos[i][0] = pos[i-1][0];  
+    pos[i][1] = pos[i-1][1];  
+   }  
+}  
+void Snake::move()  
+{ int st = 0;  
+  do{  
+   if(!kbhit())  
+   { checkegg();  
+    if(!st)  
+     show();  
+    else  
+     st = 0;  
+    delay(dly/4);  
+    transpose();  
+    delay(dly/4);  
+    gnrtUnCond();  
+    delay(dly/4);  
+    check();  
+   delay(dly/4);  
+    }  
+   else if(stp){  
+   chngDir();  
+   gnrtCond();  
+   check();  
+   show();  
+   st = 1;  
+   }  
+   } while(stp);  
+}  
+void Snake::init()  
+{time_t tm;  
+ srand(time(&tm));  
+ dsp = 20;  
+ n = 5;  
+ prev = 4;  
+ for(int i = 4;i >= 0;i--)  
+ { pos[i][0] = 201 + (n - i - 1) * dsp;  
+  pos[i][1] = 301;  
+  }  
+  strtX = 21;  
+  strtY = 21;  
+  endX = 481;  
+  endY = 361;  
+  colr = 14;  
+  now = prev;  
+  dsp = 20;  
+  stp = 111; 
