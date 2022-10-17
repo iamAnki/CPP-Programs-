@@ -56,4 +56,4 @@ int main()
     }
     cout<<fixed<<setprecision(4)<<val<<endl;
     return 0;
-
+}
