@@ -1,0 +1,22 @@
+#include <stdio.h>
+typedef struct {
+  float Real;
+  float Im;
+} Complex;
+Complex complex_average(Complex z1, Complex z2){
+  Complex z;
+  z.Real = (z1.Real+z2.Real)/2;
+  z.Im   = (z2.Im + z1.Im)/2;
+  return z;
+}
+
+int main(void){
+  Complex z1,z2,z;
+  z1.Real = 2.12;
+  z1.Im = 1.21;
+  z2.Real = -2.8;
+  z2.Im = 7.8; 
+  z = complex_average(z1,z2);
+  printf("result = %f + %f",z.Real , z.Im);
+  return 0;
+}
