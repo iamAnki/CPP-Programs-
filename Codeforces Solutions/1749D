@@ -1,0 +1,282 @@
+#pragma GCC optimize("O3,unroll-loops") // https://codeforces.com/blog/entry/96344
+#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+#include <bits/stdc++.h>
+#define ll long long
+#define INF 0x3f3f3f3f
+using namespace std;
+ 
+struct custom_hash {
+    // https://codeforces.com/blog/entry/62393
+    static uint64_t splitmix64(uint64_t x) {
+        // http://xorshift.di.unimi.it/splitmix64.c
+        x += 0x9e3779b97f4a7c15;
+        x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9;
+        x = (x ^ (x >> 27)) * 0x94d049bb133111eb;
+        return x ^ (x >> 31);
+    }
+ 
+    size_t operator()(uint64_t x) const {
+        static const uint64_t FIXED_RANDOM = chrono::steady_clock::now().time_since_epoch().count();
+        return splitmix64(x + FIXED_RANDOM);
+    }
+};
+ 
+template <class T>
+struct BIT { //1-indexed
+    // https://github.com/ShahjalalShohag/code-library/blob/master/Data%20Structures/BIT.cpp
+    int n; vector<T> t;
+    BIT() {}
+    BIT(int _n) {
+        n = _n; t.assign(n + 1, 0);
+    }
+    T query(int i) {
+        T ans = 0;
+        for (; i >= 1; i -= (i & -i)) ans += t[i];
+        return ans;
+    }
+    void add(int i, T val) {
+        if (i <= 0) return;
+        for (; i <= n; i += (i & -i)) t[i] += val;
+    }
+    void add(int l, int r, T val) {
+        add(l, val);
+        add(r + 1, -val);
+    }
+    T query(int l, int r) {
+        return query(r) - query(l - 1);
+    }
+};
+ 
+template <class T>
+struct ST { //1-indexed
+    // https://oi-wiki.org/ds/seg
+    int n;
+    vector<T> a, d, b;
+    ST() {}
+    ST(int _n, vector<T>& a) {
+        n = _n; d.assign(n<<2, 0); b.assign(n<<2, 0);
+        this->a = a;
+    }
+    void build(ll l, ll r, ll p) {
+        if(l==r) {
+            d[p] = a[l];
+            return;
+        }
+        ll m = l + (r-l)/2;
+        build(l, m, p<<1);
+        build(m+1, r, (p<<1) | 1);
+        d[p] = d[p<<1] + d[(p<<1) | 1];
+    }
+    void update(int l, int r, int c, int s, int t, int p) {
+        if (l <= s && t <= r) {
+            d[p] += (t - s + 1) * c, b[p] += c;
+            return;
+        }
+        int m = s + ((t - s) >> 1);
+        if (b[p] && s != t) {
+            d[p * 2] += b[p] * (m - s + 1), d[p * 2 + 1] += b[p] * (t - m);
+            b[p * 2] += b[p], b[p * 2 + 1] += b[p];
+            b[p] = 0;
+        }
+        if (l <= m) update(l, r, c, s, m, p * 2);
+        if (r > m) update(l, r, c, m + 1, t, p * 2 + 1);
+        d[p] = d[p * 2] + d[p * 2 + 1];
+    }
+    T query(ll l, ll r, ll s, ll t, ll p) {
+        if (l <= s && t <= r) return d[p];
+        ll m = s + ((t - s) >> 1);
+        if (b[p])
+            d[p << 1] += b[p] * (m - s + 1), d[(p << 1) | 1] += b[p] * (t - m),
+            b[p << 1] += b[p], b[(p << 1) | 1] += b[p];
+        b[p] = 0;
+        ll sum = 0;
+        if (l <= m)
+            sum = query(l, r, s, m, p << 1);
+        if (r > m) sum += query(l, r, m + 1, t, (p << 1) | 1);
+        return sum;
+    }
+};
+ 
+struct SegTreeNode {
+    ll sum;
+};
+ 
+struct SegTree {
+    SegTreeNode NEUTURAL_ELEMENT = {0LL};
+    SegTreeNode NO_OPERATION = {LLONG_MAX - 1};
+    int size;
+    vector<SegTreeNode> a;
+    vector<SegTreeNode> lazy;
+    SegTree(int n) {
+        n += 10;
+        size = 1;
+        while(size<n) size<<=1;
+        a.assign(size<<1, NEUTURAL_ELEMENT);
+        lazy.assign(size<<1, NO_OPERATION);
+    }
+    SegTreeNode single(ll val) {
+        return {val};
+    }
+    SegTreeNode merge(SegTreeNode a, SegTreeNode b) {
+        return {a.sum + b.sum};
+    }
+    SegTreeNode modify_op(SegTreeNode a, SegTreeNode b, ll len) {
+        if(b.sum == NO_OPERATION.sum) return a;
+        return {b.sum * len};
+    }
+    void apply_modify_op(SegTreeNode& a, SegTreeNode b, ll len) {
+        a = modify_op(a, b, len);
+    }
+    void propagate(int x, int lx, int rx) {
+        if(rx-lx==1) return;
+        int m = lx + (rx-lx)/2;
+        apply_modify_op(lazy[(x<<1)+1], lazy[x], 1);
+        apply_modify_op(a[(x<<1)+1], lazy[x], m-lx);
+        apply_modify_op(lazy[(x<<1)+2], lazy[x], 1);
+        apply_modify_op(a[(x<<1)+2], lazy[x], rx-m);
+        lazy[x] = NO_OPERATION;
+    }
+    void build(vector<ll>& values, int x, int lx, int rx) {
+        if(rx-lx==1) {
+            if(lx<values.size()) {
+                a[x] = single(values[lx]);
+            } else {
+                a[x] = NEUTURAL_ELEMENT;
+            }
+            return;
+        }
+        int m = lx + (rx-lx)/2;
+        build(values, (x<<1)+1, lx, m);
+        build(values, (x<<1)+2, m, rx);
+        a[x] = merge(a[(x<<1)+1], a[(x<<1)+2]);
+    }
+    void build(vector<ll>& values) {
+        build(values, 0, 0, size);
+    }
+    void modify(int l, int r, ll val, int x, int lx, int rx) {
+        if(l>=rx || lx>=r) return;
+        propagate(x, lx, rx);
+        if(lx>=l && rx<=r) {
+            apply_modify_op(lazy[x], single(val), 1);
+            apply_modify_op(a[x], single(val), rx-lx);
+            return;
+        }
+        int m = lx + (rx-lx)/2;
+        modify(l, r, val, (x << 1) + 1, lx, m);
+        modify(l, r, val, (x << 1) + 2, m, rx);
+        a[x] = merge(a[(x<<1)+1], a[(x<<1)+2]);
+        apply_modify_op(a[x], lazy[x], rx-lx);
+    }
+    void modify(int l, int r, ll val) {
+        modify(l, r, val, 0, 0, size);
+    }
+    SegTreeNode query(int l, int r, int x, int lx, int rx) {
+        if(l>=rx || lx>=r) return NEUTURAL_ELEMENT;
+        propagate(x, lx, rx);
+        if(lx>=l && rx<=r) return a[x];
+        int m = lx + (rx-lx)/2;
+        auto left = query(l, r, (x<<1)+1, lx, m);
+        auto right = query(l, r, (x<<1)+2, m, rx);
+        auto res = merge(left, right);
+        apply_modify_op(res, lazy[x], min(r, rx)-max(l, lx));
+        return res;
+    }
+    SegTreeNode query(int l, int r) {
+        return query(l, r, 0, 0, size);
+    }
+};
+ 
+ll sqrt(ll n) {
+    ll l = 1;
+    ll r = 1e9;
+    while(l<=r) {
+        ll m = l+(r-l)/2;
+        if(m*m<n) {
+            l = m + 1;
+        } else {
+            r = m - 1;
+        }
+    }
+    return l;
+}
+ 
+void getNext(string p, vector<int>& next) {
+    int i = 0, j=-1;
+    next[0] = -1;
+    int m = p.size();
+    while(i<m) {
+        if(j==-1 || p[i]==p[j]) {
+            next[++i] = ++j;
+        } else {
+            j = next[j];
+        }
+    }
+}
+ 
+int kmp(string s, string p) {
+    int cnt = 0;
+    int n = s.size();
+    int m = p.size();
+    vector<int> next(m+1);
+    getNext(p, next);
+    int i = 0;
+    int j = 0;
+    while(i<n) {
+        if(j==-1 || s[i]==p[j]) {
+            i++;
+            j++;
+        } else {
+            j = next[j];
+        }
+        if(j==m) {
+            cnt++;
+            j = 0;
+        }
+    }
+    return cnt;
+}
+ 
+const ll mod = 998244353;
+ 
+ll mod_add(ll a, ll b) {
+    return ((a%mod)+(b%mod))%mod;
+}
+ 
+ll mod_subt(ll a, ll b) {
+    return (((a%mod)-(b%mod))+mod)%mod;
+}
+ 
+ll mod_mult(ll a, ll b) {
+    return ((a%mod)*(b%mod))%mod;
+}
+ 
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+ 
+    ll n, m;
+    cin>>n>>m;
+    vector<bool> isPrime(n+1, true);
+    isPrime[1] = false;
+    ll total = 0;
+    ll currbase = m;
+    ll totalunambigious = 0;
+    ll currunambigious = 0;
+    ll unambigiousbase = 1;
+    ll primeproduct = 1;
+    for(ll i=1; i<=n; i++) {
+        if(isPrime[i]) {
+            if(primeproduct<=m) primeproduct *= i;
+            for(ll j=i; j<=n; j+=i) {
+                isPrime[j] = false;
+            }
+        }
+        ll possibilityofa = m/primeproduct;
+        unambigiousbase = mod_mult(unambigiousbase, possibilityofa);
+        totalunambigious = mod_add(totalunambigious, unambigiousbase);
+        total = mod_add(total, currbase);
+        currbase = mod_mult(currbase, m);
+    }
+    cout<<mod_subt(total, totalunambigious)<<endl;
+    return 0;
+}
