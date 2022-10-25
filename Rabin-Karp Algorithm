@@ -1,0 +1,53 @@
+#include <bits/stdc++.h>
+#define ll long long int
+#define prime 119
+
+using namespace std;
+
+
+ll createHashvalue(string str, int n){ //O(m)
+    ll result=0;
+    for (int i=0;i<n; i++){
+        result+=(ll)str[i]*(ll)pow(prime, i);
+    }
+    return result;
+}
+
+ll rollingHash(string str, int oldIndex, int newIndex, ll oldHash, int patternLength){ //O(1)
+    ll newHash=(oldHash-str[oldIndex])/prime;
+    newHash+=((ll)str[newIndex]*(ll)pow(prime, patternLength-1));
+    return newHash;
+}
+
+bool isMatching(string str1, int start1, int end1, string str2, int start2, int end2){ //O(m)
+    if (end1-start1 != end2-start2){
+        return false;
+    }
+
+    while (start1<=end1 && start2<=end2){
+        if (str1[start1]!=str2[start2]){
+            return false;
+        }
+        start1++;
+        start2++;
+    }
+    return true;
+}
+
+int main()
+{
+    string str="ababcabdab";
+    string pattern="abd";
+    ll stringHash=createHashvalue(str, pattern.length());
+    ll patternHash=createHashvalue(pattern, pattern.length());
+    for (int i=0;i<=str.length()-pattern.length();i++){
+        if (patternHash==stringHash && isMatching(str, i, i+pattern.length()-1, pattern, 0, pattern.length()-1)){
+            cout<<"Index = "<<i;
+            break;
+        }
+        if (i<str.length()-pattern.length()){
+            stringHash=rollingHash(str, i, i+pattern.length(), stringHash, pattern.length());
+        }
+    }
+    return 0;
+}
