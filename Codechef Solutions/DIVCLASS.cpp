@@ -17,21 +17,21 @@ class Codechef
 		    int N=scan.nextInt();
 		    int a[]=new int[N];
 		    HashSet<Integer> hs=new HashSet<Integer>();
-    		    for(int i=0;i<N;i++)
-    		    {
-    		        a[i]=scan.nextInt();
-    		        hs.add(a[i]);
-    		    }
+		    for(int i=0;i<N;i++)
+		    {
+			a[i]=scan.nextInt();
+			hs.add(a[i]);
+		    }
 		    if(N<12)
 		    {
-		        System.out.println("no");
+			System.out.println("no");
 		    }
 		    else
 		    {
-		        if(hs.size()>12)
-		            System.out.println("no");
-		        else
-		            System.out.println("yes");
+			if(hs.size()>12)
+			    System.out.println("no");
+			else
+			    System.out.println("yes");
 		    }
 		}
 	}
