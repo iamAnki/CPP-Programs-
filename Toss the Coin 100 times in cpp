@@ -1,0 +1,32 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <string>
+using namespace std;
+
+int coinToss(void)
+{
+	int randnum;
+	randnum = 1 + rand() % 2;
+	return randnum;
+}
+
+int main()
+{
+    //number of tosses
+	int limit = 100;
+	
+	srand(time(0));
+	
+	int headsCount = 0;
+	for (int i = 1; i <= limit; i++)
+	{
+		int result = coinToss();
+		if (result == 1)
+			headsCount++;
+	}
+	cout <<"Heads count: "<< headsCount << endl;
+	cout <<"Tails count: "<< limit - headsCount << endl;
+	
+	return 0;
+}

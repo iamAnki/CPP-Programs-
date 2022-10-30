@@ -1,0 +1,1 @@
+//calculate sum of n natural numbers in python?
