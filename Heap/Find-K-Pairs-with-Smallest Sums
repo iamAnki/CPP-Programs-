@@ -1,0 +1,26 @@
+//problem link: https://leetcode.com/problems/find-k-pairs-with-smallest-sums/
+class Solution {
+public:
+    typedef pair<int,pair<int,int>> pi;
+    vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
+        priority_queue<pi,vector<pi>,greater<pi>> pq;
+        sort(nums1.begin(),nums1.end());
+        sort(nums2.begin(),nums2.end());
+        for(int i=0; i<nums1.size(); i++){
+            pq.push({nums1[i]+nums2[0],{i,0}});
+        }
+        vector<vector<int>> ans;
+        int n = nums1.size();
+        while(ans.size()!=k && !pq.empty()){
+            vector<int> v;
+            int x = pq.top().second.first;
+            int y = pq.top().second.second;
+            v.push_back(nums1[x]);
+            v.push_back(nums2[y]);
+            pq.pop();
+            if(y<nums2.size()-1)pq.push({nums1[x]+nums2[y+1],{x,y+1}});
+            ans.push_back(v);
+        }
+        return ans;
+    }
+};
