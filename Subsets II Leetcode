@@ -1,0 +1,28 @@
+class Solution {
+public:
+
+    void check(int i,vector<int>&nums,vector<vector<int>>&ans,vector<int>&v,set<vector<int>>&s)
+    {
+        if(i>= nums.size())
+        {
+                s.insert(v);
+                return;
+        }
+
+        v.push_back(nums[i]);
+        check(i+1,nums,ans,v,s);
+        v.pop_back();
+        check(i+1,nums,ans,v,s);
+
+    }
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        set<vector<int>>s;vector<vector<int>>ans;vector<int>v;
+        sort(nums.begin(),nums.end()); ///**important**
+        check(0,nums,ans,v,s);
+        for(auto x:s)
+        {
+            ans.push_back(x);
+        }
+        return ans;
+    }
+};
